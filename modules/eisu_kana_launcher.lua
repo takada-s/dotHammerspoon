@@ -40,46 +40,25 @@ local function module_init()
         end
     end
 
-    local mapping = {
-        kana = {
-            -- single letter key: launcher
-            a = activateApp('Activity Monitor'),
-            c = activateApp('Microsoft Teams'),
-            e = activateApp('Emacs'),
-            f = activateApp(BROWSER1),
-            g = activateApp(BROWSER2),
-            h = activateApp(BROWSER3),
-            i = activateApp('iTunes'),
-            q = activateApp('OmniFocus'),
-            r = activateApp('RubyMine'),
-            s = activateApp('Calendar'),
-            t = activateApp('iTerm'),
-            w = activateApp('Wunderlist'),
-            -- PgUp/Dn: volume control
-            pageup = replaceToSystemKey('SOUND_UP'),
-            pagedown = replaceToSystemKey('SOUND_DOWN'),
-            -- PrintSc/ScLock/Pause (f13,f14,f15): audio control
-            f13 = replaceToSystemKey('PREVIOUS'),
-            f14 = replaceToSystemKey('PLAY'),
-            f15 = replaceToSystemKey('NEXT'),
-        },
-        eisu = {
-            -- hjkl: move cursor
-            h = replaceToKey('left'),
-            j = replaceToKey('down'),
-            k = replaceToKey('up'),
-            l = replaceToKey('right'),
-            -- a,e: home / end
-            a = replaceToKey('home'),
-            e = replaceToKey('end'),
-        },
-    }
+    -- convert dic to actual handler
+    local function resolveMappingFn(info)
+        if info['activateApp'] then
+            return activateApp(info['activateApp'])
+        elseif info['replaceToKey'] then
+            return replaceToKey(info['replaceToKey'])
+        elseif info['replaceToSystemKey'] then
+            return replaceToSystemKey(info['replaceToSystemKey'])
+        else
+            return function() hs.alert("not defined: " .. info) end
+        end
+    end
 
-    -- convert above human-readable form into keycode style
     local appMapping = { kana = {}, eisu = {} }
-    for actkey, map in pairs(mapping) do
-        for key, fn in pairs(map) do
-            appMapping[actkey][hs.keycodes.map[key]] = fn
+    for actkey, map in pairs(EIKANA_MAPPING) do
+        for key, info in pairs(map) do
+            local keycode = hs.keycodes.map[key]
+            local func = resolveMappingFn(info)
+            appMapping[actkey][keycode] = func
         end
     end
 
