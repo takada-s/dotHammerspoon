@@ -1,18 +1,22 @@
 -- for eisu_kana_launcher
-BROWSER1 = 'Firefox'
-BROWSER2 = 'Google Chrome'
-BROWSER3 = 'Safari'
+local BROWSER1 = 'Firefox'
+local BROWSER2 = 'Google Chrome'
+local BROWSER3 = 'Safari'
+local MAILER1  = 'Mail'
+local MAILER2  = 'Thunderbird'
 
 EIKANA_MAPPING = {
     kana = {
         -- single letter key: launcher
         a = { activateApp = 'Activity Monitor' },
-        b = { activateApp = 'Mail' },
+        b = { activateApp = MAILER1 },
+        c = { activateApp = 'Microsoft Teams' },
         e = { activateApp = 'Emacs' },
         f = { activateApp = BROWSER1 },
         g = { activateApp = BROWSER2 },
         h = { activateApp = BROWSER3 },
         i = { activateApp = 'iTunes' },
+        n = { activateApp = MAILER2 },
         q = { activateApp = 'OmniFocus' },
         r = { activateApp = 'RubyMine' },
         s = { activateApp = 'Calendar' },
