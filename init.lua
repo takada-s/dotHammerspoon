@@ -1,3 +1,6 @@
+-- load configs to global vars
+dofile 'config.lua'
+
 -- eisu/kana launcher
 dofile 'modules/eisu_kana_launcher.lua'
 -- browser keybind hack

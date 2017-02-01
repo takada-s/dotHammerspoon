@@ -44,8 +44,11 @@ local function module_init()
         kana = {
             -- single letter key: launcher
             a = activateApp('Activity Monitor'),
+            c = activateApp('Microsoft Teams'),
             e = activateApp('Emacs'),
-            f = activateApp('Google Chrome'),
+            f = activateApp(BROWSER1),
+            g = activateApp(BROWSER2),
+            h = activateApp(BROWSER3),
             i = activateApp('iTunes'),
             q = activateApp('OmniFocus'),
             r = activateApp('RubyMine'),
