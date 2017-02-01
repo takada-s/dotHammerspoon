@@ -1,4 +1,4 @@
-local function module_init()
+local function module_init(conf)
     local kana = 0x66
     local eisu = 0x68
     local activateKeyPressed = {}
@@ -44,8 +44,11 @@ local function module_init()
         kana = {
             -- single letter key: launcher
             a = activateApp('Activity Monitor'),
+            c = activateApp('Microsoft Teams'),
             e = activateApp('Emacs'),
-            f = activateApp('Google Chrome'),
+            f = activateApp(BROWSER1),
+            g = activateApp(BROWSER2),
+            h = activateApp(BROWSER3),
             i = activateApp('iTunes'),
             q = activateApp('OmniFocus'),
             r = activateApp('RubyMine'),
@@ -193,5 +196,6 @@ local function module_init()
     hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, eisuHandler):start()
 end
 
-module_init()
+local conf = { ... }
+module_init(conf)
 print("eisu_kana_launcher loaded.")
