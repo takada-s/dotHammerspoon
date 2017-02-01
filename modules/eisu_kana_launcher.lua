@@ -1,4 +1,4 @@
-local function module_init(conf)
+local function module_init()
     local kana = 0x66
     local eisu = 0x68
     local activateKeyPressed = {}
@@ -196,6 +196,5 @@ local function module_init(conf)
     hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, eisuHandler):start()
 end
 
-local conf = { ... }
-module_init(conf)
+module_init()
 print("eisu_kana_launcher loaded.")
