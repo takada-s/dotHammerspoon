@@ -171,8 +171,13 @@ local function module_init()
         end
     end
 
-    hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, kanaHandler):start()
-    hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, eisuHandler):start()
+    -- don't make this local, because GC kills them...
+    --noinspection GlobalCreationOutsideO
+    kana_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, kanaHandler)
+    kana_event:start()
+    --noinspection GlobalCreationOutsideO
+    eisu_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, eisuHandler)
+    eisu_event:start()
 end
 
 module_init()
