@@ -25,7 +25,9 @@ local function module_init()
         end
     end
 
-    hs.application.watcher.new(handleGlobalAppEvent):start()
+    --noinspection GlobalCreationOutsideO
+    copipe_event = hs.application.watcher.new(handleGlobalAppEvent)
+    copipe_event:start()
 
     binds['cut'] = hs.hotkey.bind({ 'ctrl' }, 'x', nil, copipeHandler('x'), nil, nil)
     binds['copy'] = hs.hotkey.bind({ 'ctrl' }, 'c', nil, copipeHandler('c'), nil, nil)
