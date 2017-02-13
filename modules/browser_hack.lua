@@ -25,7 +25,9 @@ local function module_init()
         end
     end
 
-    hs.application.watcher.new(handleGlobalAppEvent):start()
+    --noinspection GlobalCreationOutsideO
+    browser_event = hs.application.watcher.new(handleGlobalAppEvent)
+    browser_event:start()
 
     binds['tab'] = hs.hotkey.bind({ 'ctrl' }, 't', nil, replaceHandler('t'), nil, nil)
     binds['close'] = hs.hotkey.bind({ 'ctrl' }, 'w', nil, replaceHandler('w'), nil, nil)
