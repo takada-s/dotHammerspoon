@@ -1,6 +1,6 @@
 local function module_init()
-    local kana = 0x66
-    local eisu = 0x68
+    local kana = 0x68
+    local eisu = 0x66
     local activateKeyPressed = {}
     local handlerCalled = {}
 
@@ -63,14 +63,14 @@ local function module_init()
         end
     end
 
-    -- Kana+x Handler for Launcher
+    -- Eisu+x Handler for Launcher
     --   key repeat: NO
     --   timing:     keyUp
-    local function kanaHandler(e)
+    local function eisuHandler(e)
         local keyCode = e:getKeyCode()
         local evType = e:getType()
-        local activateKey = kana
-        local handler = appMapping['kana'][keyCode]
+        local activateKey = eisu
+        local handler = appMapping['eisu'][keyCode]
 
         -- print("keyCode:" .. tostring(keyCode) .. ", evtype: " .. evType .. ", actPress: " .. tostring(activateKeyPressed[activateKey]) .. ", called: " .. tostring(handlerCalled[activateKey]))
 
@@ -117,14 +117,14 @@ local function module_init()
         end
     end
 
-    -- Eisu+x Handler for Cursor Control
+    -- Kana+x Handler for Cursor Control
     --   key repeat: YES
     --   timing:     keyDown
-    local function eisuHandler(e)
+    local function kanaHandler(e)
         local keyCode = e:getKeyCode()
         local evType = e:getType()
-        local activateKey = eisu
-        local handler = appMapping['eisu'][keyCode]
+        local activateKey = kana
+        local handler = appMapping['kana'][keyCode]
 
         -- print("keyCode:" .. tostring(keyCode) .. ", evtype: " .. evType .. ", actPress: " .. tostring(activateKeyPressed[activateKey]) .. ", called: " .. tostring(handlerCalled[activateKey]))
 
@@ -174,11 +174,11 @@ local function module_init()
 
     -- don't make this local, because GC kills them...
     --noinspection GlobalCreationOutsideO
-    kana_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, kanaHandler)
-    kana_event:start()
-    --noinspection GlobalCreationOutsideO
     eisu_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, eisuHandler)
     eisu_event:start()
+    --noinspection GlobalCreationOutsideO
+    kana_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, kanaHandler)
+    kana_event:start()
 end
 
 module_init()
