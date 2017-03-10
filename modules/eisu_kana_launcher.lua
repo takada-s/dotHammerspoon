@@ -11,6 +11,7 @@ local function module_init()
 
     -- generate handler to activating application (via osascript)
     local function activateApp(appName)
+        if (appName == 'ignore') then return function() end end
         return function(e)
             -- hs.alert.show("App launcher: " .. appName)
             local command = 'tell application "' .. appName .. '" to activate'

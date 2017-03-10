@@ -1,6 +1,9 @@
 -- load configs to global vars
 dofile 'config.lua'
 
+function config_override() dofile 'config.local.lua' end
+pcall(config_override)
+
 -- eisu/kana launcher
 dofile 'modules/eisu_kana_launcher.lua'
 -- browser keybind hack
