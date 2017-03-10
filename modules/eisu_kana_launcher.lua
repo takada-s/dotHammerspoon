@@ -63,108 +63,56 @@ local function module_init()
         end
     end
 
-    -- Eisu+x Handler for Launcher
-    --   key repeat: No
-    --   timing:     keyDown
-    local function eisuHandler(e)
-        local keyCode = e:getKeyCode()
-        local evType = e:getType()
-        local activateKey = eisu
-        local handler = appMapping['eisu'][keyCode]
+    local function handlerFor(typeStr, do_repeat)
+        local actKeyForType = { kana = kana, eisu = eisu }
+        local activateKey = actKeyForType[typeStr]
 
-        -- up event
-        if evType == hs.eventtap.event.types.keyUp then
-            if (keyCode == activateKey) then
-                activateKeyPressed[activateKey] = false
+        return function(e)
+            local keyCode = e:getKeyCode()
+            local evType = e:getType()
+            local handler = appMapping[typeStr][keyCode]
 
-                if handlerCalled[activateKey] then
-                    handlerCalled[activateKey] = false
-                    return true
+            -- up event
+            if evType == hs.eventtap.event.types.keyUp then
+                if (keyCode == activateKey) then
+                    activateKeyPressed[activateKey] = false
+
+                    if handlerCalled[activateKey] then
+                        handlerCalled[activateKey] = false
+                        return true
+                    end
+
+                    -- activate key pressed one-shot
+                    local one_shot_act = {
+                        -- down
+                        hs.eventtap.event.newKeyEvent({}, activateKey, true),
+                        -- up
+                        hs.eventtap.event.newKeyEvent({}, activateKey, false),
+                    }
+
+                    return true, one_shot_act
                 end
 
-                -- activate key pressed one-shot
-                local one_shot_act = {
-                    -- down
-                    hs.eventtap.event.newKeyEvent({}, activateKey, true),
-                    -- up
-                    hs.eventtap.event.newKeyEvent({}, activateKey, false),
-                }
-
-                return true, one_shot_act
+                -- other key's up event
+                return false
             end
 
-            -- other key's up event
-            return false
-        end
-
-        -- down event
-        if (keyCode == activateKey) then
-            activateKeyPressed[activateKey] = true
-            return true
-        end
-
-        -- combo event: act-key down + other key down: call handler
-        if activateKeyPressed[activateKey] then
-            -- no handler defined
-            if not handler then return end
-            -- handler has been called: just ignore keydowns
-            if handlerCalled[activateKey] then return false end
-
-            handlerCalled[activateKey] = true
-            local ret = handler(e)
-
-            -- cease the combo key
-            return true, ret
-        end
-    end
-
-
-    -- Kana+x Handler for Cursor Control
-    --   key repeat: YES
-    --   timing:     keyDown
-    local function kanaHandler(e)
-        local keyCode = e:getKeyCode()
-        local evType = e:getType()
-        local activateKey = kana
-        local handler = appMapping['kana'][keyCode]
-
-        -- print("keyCode:" .. tostring(keyCode) .. ", evtype: " .. evType .. ", actPress: " .. tostring(activateKeyPressed[activateKey]) .. ", called: " .. tostring(handlerCalled[activateKey]))
-
-        -- up event
-        if evType == hs.eventtap.event.types.keyUp then
+            -- down event
             if (keyCode == activateKey) then
-                activateKeyPressed[activateKey] = false
+                activateKeyPressed[activateKey] = true
+                return true
+            end
 
-                if handlerCalled[activateKey] then
-                    handlerCalled[activateKey] = false
-                    return true
+            -- combo event: act-key down + other key down: call handler
+            if activateKeyPressed[activateKey] then
+                -- no handler defined
+                if not handler then return end
+
+                if not do_repeat then
+                    -- handler has been called: just ignore keydowns
+                    if handlerCalled[activateKey] then return true, {} end
                 end
 
-                -- activate key pressed one-shot
-                local one_shot_act = {
-                    -- down
-                    hs.eventtap.event.newKeyEvent({}, activateKey, true),
-                    -- up
-                    hs.eventtap.event.newKeyEvent({}, activateKey, false),
-                }
-
-                return true, one_shot_act
-            end
-
-            -- other key's up event
-            return false
-        end
-
-        -- down event
-        if (keyCode == activateKey) then
-            activateKeyPressed[activateKey] = true
-            return true
-        end
-
-        -- combo event
-        if activateKeyPressed[activateKey] then
-            -- down + other key: call handler
-            if handler then
                 handlerCalled[activateKey] = true
                 local ret = handler(e)
 
@@ -176,10 +124,12 @@ local function module_init()
 
     -- don't make this local, because GC kills them...
     --noinspection GlobalCreationOutsideO
-    eisu_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, eisuHandler)
+    eisu_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp },
+        handlerFor('eisu', false))
     eisu_event:start()
     --noinspection GlobalCreationOutsideO
-    kana_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp }, kanaHandler)
+    kana_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp },
+        handlerFor('kana', true))
     kana_event:start()
 end
 
