@@ -1,5 +1,5 @@
 EIKANA_MAPPING = {
-    kana = {
+    eisu = {
         -- single letter key: launcher
         a = { activateApp = 'Activity Monitor' },
         b = { activateApp = 'Mail' },
@@ -24,7 +24,7 @@ EIKANA_MAPPING = {
         f14 = { replaceToSystemKey = 'PLAY' },
         f15 = { replaceToSystemKey = 'NEXT' },
     },
-    eisu = {
+    kana = {
         -- hjkl: move cursor
         h = { replaceToKey = 'left' },
         j = { replaceToKey = 'down' },
