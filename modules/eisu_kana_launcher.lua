@@ -9,13 +9,17 @@ local function module_init()
     handlerCalled[kana] = false
     handlerCalled[eisu] = false
 
-    -- generate handler to activating application (via osascript)
+    -- generate handler to activating application
     local function activateApp(appName)
         if (appName == 'ignore') then return function() end end
         return function(e)
-            -- hs.alert.show("App launcher: " .. appName)
-            local command = 'tell application "' .. appName .. '" to activate'
-            hs.osascript.applescript(command)
+            local app = hs.application.get(appName)
+            if app then
+                -- app found. just activate
+                app:activate()
+            else
+                hs.application.open(appName)
+            end
             return {}
         end
     end
