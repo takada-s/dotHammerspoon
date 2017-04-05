@@ -35,3 +35,9 @@ EIKANA_MAPPING = {
         e = { replaceToKey = 'end' },
     }
 }
+
+skip_eisu_kana_launcher = false
+skip_browser_hack = false
+skip_copipe = false
+skip_win_resize = false
+skip_rubymine_hack = false

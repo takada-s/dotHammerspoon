@@ -2,16 +2,29 @@
 dofile 'config.lua'
 
 function config_override() dofile 'config.local.lua' end
+
 pcall(config_override)
 
 -- eisu/kana launcher
-dofile 'modules/eisu_kana_launcher.lua'
+if (not skip_eisu_kana_launcher) then
+    dofile 'modules/eisu_kana_launcher.lua'
+end
 -- browser keybind hack
-dofile 'modules/browser_hack.lua'
+if (not skip_browser_hack) then
+    dofile 'modules/browser_hack.lua'
+end
 -- copy and paste key binding
-dofile 'modules/copipe.lua'
+if (not skip_copipe) then
+    dofile 'modules/copipe.lua'
+end
 -- window resizing
-dofile 'modules/win_resize.lua'
+if (not skip_win_resize) then
+    dofile 'modules/win_resize.lua'
+end
+-- rubymine hack
+if (not skip_rubymine_hack) then
+    dofile 'modules/rubymine_hack.lua'
+end
 
 -- lock key (screen saver)
 hs.hotkey.bind({ 'cmd', 'alt' }, 'L', function()
