@@ -26,8 +26,8 @@ local function module_init()
     end
 
     --noinspection GlobalCreationOutsideO
-    browser_event = hs.application.watcher.new(handleGlobalAppEvent)
-    browser_event:start()
+    rm_event = hs.application.watcher.new(handleGlobalAppEvent)
+    rm_event:start()
 
     binds['copy'] = hs.hotkey.bind({ 'alt' }, 'w', nil, copyHandler, nil, nil)
 end
