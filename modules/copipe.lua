@@ -1,5 +1,8 @@
 local function module_init()
-    local excludeNames = { "iTerm2", "RubyMine", "Emacs", "VMware Fusion" }
+    local excludeNames = {
+        "iTerm2", "RubyMine", "Emacs", "VMware Fusion",
+        "Microsoft Remote Desktop", "Microsoft Remote Desktop Beta"
+    }
 
     local binds = {}
 
