@@ -41,3 +41,7 @@ skip_browser_hack = false
 skip_copipe = false
 skip_win_resize = false
 skip_rubymine_hack = false
+
+eisu_kana_launcher_exclude_names = {
+    "Microsoft Remote Desktop", "Microsoft Remote Desktop Beta"
+}

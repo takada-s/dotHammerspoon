@@ -3,11 +3,13 @@ local function module_init()
     local eisu = 0x66
     local activateKeyPressed = {}
     local handlerCalled = {}
+    local appMapping = { kana = {}, eisu = {}, kana_thru = {}, eisu_thru = {} }
 
     activateKeyPressed[kana] = false
     activateKeyPressed[eisu] = false
     handlerCalled[kana] = false
     handlerCalled[eisu] = false
+
 
     -- generate handler to activating application
     local function activateApp(appName)
@@ -58,17 +60,13 @@ local function module_init()
         end
     end
 
-    local appMapping = { kana = {}, eisu = {} }
-    for actkey, map in pairs(EIKANA_MAPPING) do
-        for key, info in pairs(map) do
-            local keycode = hs.keycodes.map[key]
-            local func = resolveMappingFn(info)
-            appMapping[actkey][keycode] = func
-        end
-    end
-
     local function handlerFor(typeStr, do_repeat)
-        local actKeyForType = { kana = kana, eisu = eisu }
+        local actKeyForType = {
+            kana = kana,
+            eisu = eisu,
+            kana_thru = kana,
+            eisu_thru = eisu
+        }
         local activateKey = actKeyForType[typeStr]
 
         return function(e)
@@ -126,15 +124,80 @@ local function module_init()
         end
     end
 
-    -- don't make this local, because GC kills them...
-    --noinspection GlobalCreationOutsideO
+    local function switchLauncher(isEnable)
+        if isEnable then
+            eisu_event:start()
+            kana_event:start()
+            eisu_thru_event:stop()
+            kana_thru_event:stop()
+        else
+            eisu_event:stop()
+            kana_event:stop()
+            eisu_thru_event:start()
+            kana_thru_event:start()
+        end
+    end
+
+    local function handleGlobalAppEvent(name, event, _app)
+        local activate = not hs.fnutils.contains(eisu_kana_launcher_exclude_names, name)
+
+        if event == hs.application.watcher.activated then
+            switchLauncher(activate)
+        end
+    end
+
+    local function wrapWithMods(mods, key)
+        return function(e)
+            local ret = {}
+            -- mods down
+            for _,mod in pairs(mods) do
+                table.insert(ret, hs.eventtap.event.newKeyEvent(hs.keycodes.map[mod], true):post())
+            end
+            -- main key down / up
+            table.insert(ret, hs.eventtap.event.newKeyEvent(key, true))--:post())
+            table.insert(ret, hs.eventtap.event.newKeyEvent(key, false))--:post())
+            -- mods up
+            for _,mod in pairs(mods) do
+                table.insert(ret, hs.eventtap.event.newKeyEvent(hs.keycodes.map[mod], false):post())
+            end
+
+             return ret
+        end
+
+    end
+
+    for actkey, map in pairs(EIKANA_MAPPING) do
+        for key, info in pairs(map) do
+            local keycode = hs.keycodes.map[key]
+            local func = resolveMappingFn(info)
+            appMapping[actkey][keycode] = func
+        end
+    end
+
+    -- pass thru mode handlers
+    for ascii = string.byte('a'), string.byte('z') do
+        local key = string.char(ascii)
+        local code = hs.keycodes.map[key]
+        appMapping['eisu_thru'][code] = wrapWithMods({'ctrl', 'shift', 'alt', 'cmd'}, code)
+        appMapping['kana_thru'][code] = wrapWithMods({'ctrl', 'shift', 'alt'}, code)
+    end
+
+
+    -- don't make these local, because GC kills them...
     eisu_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp },
         handlerFor('eisu', false))
-    eisu_event:start()
-    --noinspection GlobalCreationOutsideO
     kana_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp },
         handlerFor('kana', true))
-    kana_event:start()
+    eisu_thru_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp },
+        handlerFor('eisu_thru', false))
+    kana_thru_event = hs.eventtap.new({ hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp },
+        handlerFor('kana_thru', true))
+
+    app_event = hs.application.watcher.new(handleGlobalAppEvent)
+    app_event:start()
+
+    switchLauncher(true)
+
 end
 
 module_init()
